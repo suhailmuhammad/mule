@@ -7,6 +7,7 @@
 package org.mule.runtime.module.extension.internal.runtime.source;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -15,7 +16,9 @@ import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.execution.CompletionHandler;
 import org.mule.runtime.core.execution.ExceptionCallback;
 import org.mule.runtime.core.api.Event;
@@ -25,6 +28,8 @@ import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.execution.ResponseCompletionCallback;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
+
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +43,16 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class ExtensionFlowProcessingTemplateTestCase extends AbstractMuleTestCase {
 
   @Mock
+  private Message message;
+
+  @Mock
   private Event event;
 
   @Mock
   private Processor messageProcessor;
 
   @Mock
-  private CompletionHandler<Event, MessagingException> completionHandler;
+  private SourceCompletionHandler completionHandler;
 
   @Mock
   private ResponseCompletionCallback responseCompletionCallback;
@@ -55,19 +63,21 @@ public class ExtensionFlowProcessingTemplateTestCase extends AbstractMuleTestCas
   @Mock
   private MessagingException messagingException;
 
+  @Mock
+  private Map<String, Object> mockParameters;
+
   private RuntimeException runtimeException = new RuntimeException();
 
   private ExtensionFlowProcessingTemplate template;
 
   @Before
   public void before() {
-    //TODO fix
-    //template = new ExtensionFlowProcessingTemplate(event, messageProcessor, completionHandler, Optional.empty());
+    template = new ExtensionFlowProcessingTemplate(message, messageProcessor, completionHandler);
   }
 
   @Test
   public void getMuleEvent() throws Exception {
-    //assertThat(template.getEvent(), is(sameInstance(event)));
+    assertThat(template.getMessage(), is(sameInstance(message)));
   }
 
   @Test
@@ -78,17 +88,17 @@ public class ExtensionFlowProcessingTemplateTestCase extends AbstractMuleTestCas
 
   @Test
   public void sendResponseToClient() throws MuleException {
-    template.sendResponseToClient(event, null, responseCompletionCallback);
-    verify(completionHandler).onCompletion(same(event), any(ExtensionSourceExceptionCallback.class));
+    template.sendResponseToClient(event, mockParameters, responseCompletionCallback);
+    verify(completionHandler).onCompletion(same(event), same(mockParameters), any(ExtensionSourceExceptionCallback.class));
     verify(responseCompletionCallback).responseSentSuccessfully();
   }
 
   @Test
   public void failedToSendResponseToClient() throws MuleException {
-    doThrow(runtimeException).when(completionHandler).onCompletion(same(event), any(ExtensionSourceExceptionCallback.class));
-    template.sendResponseToClient(event, null, responseCompletionCallback);
+    doThrow(runtimeException).when(completionHandler).onCompletion(same(event), same(mockParameters), any(ExtensionSourceExceptionCallback.class));
+    template.sendResponseToClient(event, mockParameters, responseCompletionCallback);
 
-    verify(completionHandler, never()).onFailure(any(MessagingException.class));
+    verify(completionHandler, never()).onFailure(any(MessagingException.class), same(mockParameters));
     verify(responseCompletionCallback).responseSentWithFailure(argThat(new ArgumentMatcher<MessagingException>() {
 
       @Override
@@ -100,17 +110,17 @@ public class ExtensionFlowProcessingTemplateTestCase extends AbstractMuleTestCas
 
   @Test
   public void sendFailureResponseToClient() throws Exception {
-    template.sendFailureResponseToClient(messagingException, null, responseCompletionCallback);
-    verify(completionHandler).onFailure(messagingException);
+    template.sendFailureResponseToClient(messagingException, mockParameters, responseCompletionCallback);
+    verify(completionHandler).onFailure(messagingException, mockParameters);
     verify(responseCompletionCallback).responseSentSuccessfully();
   }
 
   @Test
   public void failedToSendFailureResponseToClient() throws Exception {
-    doThrow(runtimeException).when(completionHandler).onFailure(messagingException);
-    template.sendFailureResponseToClient(messagingException, null, responseCompletionCallback);
+    when(messagingException.getEvent()).thenReturn(event);
+    doThrow(runtimeException).when(completionHandler).onFailure(messagingException, mockParameters);
+    template.sendFailureResponseToClient(messagingException, mockParameters, responseCompletionCallback);
     verify(responseCompletionCallback).responseSentWithFailure(argThat(new ArgumentMatcher<MessagingException>() {
-
       @Override
       public boolean matches(Object o) {
         return o instanceof MessagingException && ((MessagingException) o).getCauseException().equals(runtimeException);

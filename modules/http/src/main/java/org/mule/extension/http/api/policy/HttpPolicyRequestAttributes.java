@@ -11,6 +11,12 @@ import org.mule.runtime.core.model.ParameterMap;
 
 import java.util.Map;
 
+/**
+ * {@link BaseHttpRequestAttributes} subclass that allows modification of request attributes and
+ * creation through the expression language.
+ *
+ * @since 4.0
+ */
 public class HttpPolicyRequestAttributes extends BaseHttpRequestAttributes
 {
 

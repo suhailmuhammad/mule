@@ -1109,6 +1109,9 @@ public class DefaultMuleContext implements MuleContext {
     return getRegistry().lookupObject(OBJECT_CONFIGURATION_COMPONENT_LOCATOR);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public PolicyManager getPolicyManager() {
     if (policyManager == null) {

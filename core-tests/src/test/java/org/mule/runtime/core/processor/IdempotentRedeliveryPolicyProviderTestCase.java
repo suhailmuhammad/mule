@@ -48,7 +48,7 @@ import org.mockito.stubbing.Answer;
 
 import junit.framework.Assert;
 
-public class IdempotentRedeliveryPolicyTestCase extends AbstractMuleTestCase {
+public class IdempotentRedeliveryPolicyProviderTestCase extends AbstractMuleTestCase {
 
   public static final String STRING_MESSAGE = "message";
   public static final int MAX_REDELIVERY_COUNT = 0;
@@ -97,7 +97,7 @@ public class IdempotentRedeliveryPolicyTestCase extends AbstractMuleTestCase {
         });
     when(event.getMessage()).thenReturn(message);
 
-    IdempotentRedeliveryPolicyTestCase.serializer = SerializationTestUtils.getJavaSerializerWithMockContext();
+    IdempotentRedeliveryPolicyProviderTestCase.serializer = SerializationTestUtils.getJavaSerializerWithMockContext();
 
     irp.setMaxRedeliveryCount(MAX_REDELIVERY_COUNT);
     irp.setUseSecureHash(true);

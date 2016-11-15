@@ -65,10 +65,9 @@ public class HttpResponseFactory {
   private TransformationService transformationService;
   private Transformer objectToByteArray;
 
-  public HttpResponseFactory(HttpStreamingType responseStreaming, Transformer objectToByteArray,
+  public HttpResponseFactory(HttpStreamingType responseStreaming,
                              TransformationService transformationService) {
     this.responseStreaming = responseStreaming;
-    this.objectToByteArray = objectToByteArray;
     this.transformationService = transformationService;
   }
 

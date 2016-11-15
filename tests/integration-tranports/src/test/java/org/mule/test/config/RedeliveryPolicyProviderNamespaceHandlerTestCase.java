@@ -27,9 +27,9 @@ import org.junit.Test;
  * Tests for all object stores that can be configured on an {@link org.mule.routing.IdempotentMessageFilter}.
  */
 @Ignore("MULE-10725")
-public class RedeliveryPolicyNamespaceHandlerTestCase extends CompatibilityFunctionalTestCase {
+public class RedeliveryPolicyProviderNamespaceHandlerTestCase extends CompatibilityFunctionalTestCase {
 
-  public RedeliveryPolicyNamespaceHandlerTestCase() {
+  public RedeliveryPolicyProviderNamespaceHandlerTestCase() {
     // we just test the wiring of the objects, no need to start the MuleContext
     setStartContext(false);
   }

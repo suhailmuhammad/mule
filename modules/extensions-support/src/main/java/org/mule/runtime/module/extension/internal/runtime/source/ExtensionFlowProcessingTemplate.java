@@ -25,20 +25,13 @@ final class ExtensionFlowProcessingTemplate implements ExtensionFlowProcessingPh
   private final Message message;
   private final Processor messageProcessor;
   private final SourceCompletionHandler completionHandler;
-  private final Optional<Object> messagePolicyDescriptor;
 
   ExtensionFlowProcessingTemplate(Message message,
                                   Processor messageProcessor,
-                                  SourceCompletionHandler completionHandler,
-                                  Optional<Object> messagePolicyDescriptor) {
+                                  SourceCompletionHandler completionHandler) {
     this.message = message;
     this.messageProcessor = messageProcessor;
     this.completionHandler = completionHandler;
-    this.messagePolicyDescriptor = messagePolicyDescriptor;
-  }
-
-  public Optional<Object> getMessagePolicyDescriptor() {
-    return messagePolicyDescriptor;
   }
 
   @Override

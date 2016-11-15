@@ -22,6 +22,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Implementation that does transformation from http:request operation parameters
+ * to {@link Message} and viceversa.
+ *
+ * @since 4.0
+ */
 public class HttpPolicyRequestParametersTransformer implements PolicyOperationParametersTransformer {
 
   @Override

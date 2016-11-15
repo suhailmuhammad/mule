@@ -24,8 +24,8 @@ public class HttpListenerResponseSender {
     this.responseFactory = responseFactory;
   }
 
-  public HttpListenerResponseSender(Transformer objectToByteArrayTransformer, TransformationService transformationService) {
-    this.responseFactory = new HttpResponseFactory(HttpStreamingType.NEVER, objectToByteArrayTransformer, transformationService);
+  public HttpListenerResponseSender(TransformationService transformationService) {
+    this.responseFactory = new HttpResponseFactory(HttpStreamingType.NEVER, transformationService);
   }
 
   public void sendResponse(HttpResponseContext context, HttpListenerSuccessResponseBuilder responseBuilder) throws Exception {

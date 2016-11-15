@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-public class WaitPolicyTestCase extends AbstractMuleTestCase {
+public class WaitPolicyProviderTestCase extends AbstractMuleTestCase {
 
   private ExceptionCollectingThreadGroup threadGroup;
   ThreadPoolExecutor executor;

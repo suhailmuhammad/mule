@@ -53,7 +53,7 @@ public class OperationDefinitionParser extends ExtensionDefinitionParser {
         .withObjectFactoryType(OperationMessageProcessorObjectFactory.class)
         .withConstructorParameterDefinition(fromFixedValue(extensionModel).build())
         .withConstructorParameterDefinition(fromFixedValue(operationModel).build())
-        .withConstructorParameterDefinition(fromFixedValue(muleContext).build())
+        .withConstructorParameterDefinition(fromReferenceObject(MuleContext.class).build())
         .withConstructorParameterDefinition(fromReferenceObject(PolicyManager.class).build())
         .withSetterParameterDefinition(TARGET_ATTRIBUTE, fromSimpleParameter(TARGET_ATTRIBUTE).build())
         .withSetterParameterDefinition(CONFIG_PROVIDER_ATTRIBUTE_NAME, fromSimpleReferenceParameter(CONFIG_ATTRIBUTE).build());

@@ -6,6 +6,11 @@
  */
 package org.mule.extension.http.internal;
 
+/**
+ * Constants of the HTTP Connector.
+ *
+ * @since 4.0
+ */
 public interface HttpConnectorConstants {
 
   static final String URL_CONFIGURATION = "URL Configuration";

@@ -15,15 +15,18 @@ import static org.junit.Assert.assertThat;
 import org.mule.compatibility.core.api.transport.Connector;
 import org.mule.functional.extensions.CompatibilityFunctionalTestCase;
 import org.mule.runtime.core.api.retry.RetryPolicyTemplate;
+import org.mule.runtime.core.retry.async.AsynchronousRetryTemplate;
 import org.mule.runtime.core.retry.policies.SimpleRetryPolicyTemplate;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 
 import org.junit.Test;
 
-public class DefaultRetryPolicyTestCase extends CompatibilityFunctionalTestCase {
+public class DefaultRetryPolicyProviderAsyncTestCase extends CompatibilityFunctionalTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/config/spring/handlers/default-retry-policy.xml";
+    return "org/mule/config/spring/handlers/default-retry-policy-async.xml";
   }
 
   @Test
@@ -33,10 +36,17 @@ public class DefaultRetryPolicyTestCase extends CompatibilityFunctionalTestCase 
 
     RetryPolicyTemplate rpf = c.getRetryPolicyTemplate();
     assertThat(rpf, not(nullValue()));
-    assertThat(rpf, instanceOf(SimpleRetryPolicyTemplate.class));
-    assertThat(((SimpleRetryPolicyTemplate) rpf).getCount(), is(3));
+    assertThat(rpf, instanceOf(AsynchronousRetryTemplate.class));
+    assertThat(((SimpleRetryPolicyTemplate) ((AsynchronousRetryTemplate) rpf).getDelegate()).getCount(), is(3));
 
-    assertThat(c.isConnected(), is(true));
-    assertThat(c.isStarted(), is(true));
+    new PollingProber(500, 10).check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() throws Exception {
+        assertThat(c.isConnected(), is(true));
+        assertThat(c.isStarted(), is(true));
+        return true;
+      }
+    });
   }
 }

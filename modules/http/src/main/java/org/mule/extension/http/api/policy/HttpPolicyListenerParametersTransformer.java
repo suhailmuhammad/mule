@@ -13,17 +13,20 @@ import org.mule.extension.http.api.listener.builder.HttpListenerErrorResponseBui
 import org.mule.extension.http.api.listener.builder.HttpListenerResponseBuilder;
 import org.mule.extension.http.api.listener.builder.HttpListenerSuccessResponseBuilder;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.policy.PolicyOperationParametersTransformer;
 import org.mule.runtime.core.api.policy.PolicySourceParametersTransformer;
 import org.mule.runtime.core.model.ParameterMap;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
-import org.mule.runtime.module.http.internal.domain.response.HttpResponse;
 
 import com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Implementation that does transformation from http:listener response and failure response parameters
+ * to {@link Message} and viceversa.
+ *
+ * @since 4.0
+ */
 public class HttpPolicyListenerParametersTransformer implements PolicySourceParametersTransformer {
 
   @Override
@@ -76,8 +79,8 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
       httpListenerResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
       httpListenerResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
       return ImmutableMap.<String, Object>builder().put(responseBuilderParameterName, httpListenerResponseBuilder).build();
-    } else if (message.getAttributes() instanceof PolicyHttpResponseAttributes) {
-      PolicyHttpResponseAttributes httpResponseAttributes = (PolicyHttpResponseAttributes) message.getAttributes();
+    } else if (message.getAttributes() instanceof HttpPolicyResponseAttributes) {
+      HttpPolicyResponseAttributes httpResponseAttributes = (HttpPolicyResponseAttributes) message.getAttributes();
       httpListenerResponseBuilder.setBody(message.getPayload().getValue());
       httpListenerResponseBuilder.setHeaders(httpResponseAttributes.getHeaders());
       httpListenerResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());

@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.core.execution;
 
+import static java.util.Optional.empty;
 import static org.mule.runtime.core.DefaultEventContext.create;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_ERROR_RESPONSE;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
@@ -19,7 +20,8 @@ import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.api.policy.PolicySourceParametersTransformer;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.exception.MessagingException;
-import org.mule.runtime.core.policy.OperationPolicyInstance;
+import org.mule.runtime.core.policy.NextOperation;
+import org.mule.runtime.core.policy.PolicyProvider;
 import org.mule.runtime.core.policy.Policy;
 import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.core.transaction.MuleTransactionConfig;
@@ -38,7 +40,9 @@ import org.slf4j.LoggerFactory;
 /**
  * This phase routes the message through the flow.
  * <p>
- * To participate of this phase, {@link MessageProcessTemplate} must implement {@link FlowProcessingPhaseTemplate}
+ * To participate of this phase, {@link MessageProcessTemplate} must implement {@link ExtensionFlowProcessingPhaseTemplate}
+ *
+ * This implementation will know how to process messages from extension's sources
  */
 public class ExtensionFlowProcessingPhase
     extends NotificationFiringProcessingPhase<ExtensionFlowProcessingPhaseTemplate> {
@@ -70,12 +74,12 @@ public class ExtensionFlowProcessingPhase
         try {
           MessageSource messageSource = messageProcessContext.getMessageSource();
           ComponentIdentifier sourceIdentifier = messageProcessContext.getSourceIdentifier();
+          final Event templateEvent =
+                  Event.builder(create(messageProcessContext.getFlowConstruct(), sourceIdentifier.getNamespace()))
+                          .message((InternalMessage) template.getMessage()).build();
+          PolicyProvider policyProvider = policyManager.lookupPolicyProvider();
           try {
             final MessagingExceptionHandler exceptionHandler = messageProcessContext.getFlowConstruct().getExceptionListener();
-            final Event templateEvent =
-                Event.builder(create(messageProcessContext.getFlowConstruct(), sourceIdentifier.getNamespace()))
-                    .message((InternalMessage) template.getMessage()).build();
-
             NextOperation nextOperation = (muleEvent) -> {
               TransactionalErrorHandlingExecutionTemplate transactionTemplate =
                   createMainExecutionTemplate(messageProcessContext.getFlowConstruct().getMuleContext(),
@@ -92,27 +96,33 @@ public class ExtensionFlowProcessingPhase
             };
 
             Event flowExecutionResponse;
-            Optional<Policy> policy = policyManager.lookupPolicy(sourceIdentifier);
+            Optional<Policy> policy = policyProvider.createSourcePolicyInstance(templateEvent.getContext().getId(), sourceIdentifier);
             if (policy.isPresent()) {
-              OperationPolicyInstance policyInstance =
-                  policy.get().createSourcePolicyInstance(templateEvent.getContext().getId(), sourceIdentifier);
               nextOperation = buildFlowExecutionWithPolicyFunction(nextOperation, templateEvent, template, sourceIdentifier,
-                                                                   () -> policyInstance.getLastEvent());
-              flowExecutionResponse = policyInstance.process(templateEvent, nextOperation);
+                                                                   () -> policy.get().getLastEvent());
+              flowExecutionResponse = policy.get().process(templateEvent, nextOperation);
             } else {
               flowExecutionResponse = nextOperation.execute(templateEvent);
             }
             fireNotification(messageSource, flowExecutionResponse, messageProcessContext.getFlowConstruct(), MESSAGE_RESPONSE);
-            Map<String, Object> parameters = policyManager.lookupSourceParametersTransformer(sourceIdentifier).get()
-                .fromMessageToSuccessResponseParameters(flowExecutionResponse.getMessage());
-            template.sendResponseToClient(flowExecutionResponse, parameters,
-                                          createResponseCompletationCallback(phaseResultNotifier, exceptionHandler));
+            ResponseCompletionCallback responseCompletationCallback = createResponseCompletationCallback(phaseResultNotifier, exceptionHandler);
+            if (policy.isPresent()) {
+              Map<String, Object> parameters = policyManager.lookupSourceParametersTransformer(sourceIdentifier).get()
+                      .fromMessageToSuccessResponseParameters(flowExecutionResponse.getMessage());
+              template.sendResponseToClient(flowExecutionResponse, parameters,
+                                            responseCompletationCallback);
+            } else {
+              template.sendResponseToClient(flowExecutionResponse, template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse), responseCompletationCallback);
+            }
+
           } catch (final MessagingException e) {
             Map<String, Object> parameters = policyManager.lookupSourceParametersTransformer(sourceIdentifier).get()
                 .fromMessageToErrorResponseParameters(e.getEvent().getMessage());
             fireNotification(messageSource, e.getEvent(), messageProcessContext.getFlowConstruct(), MESSAGE_ERROR_RESPONSE);
             template.sendFailureResponseToClient(e, parameters,
                                                  createSendFailureResponseCompletationCallback(phaseResultNotifier));
+          } finally {
+            silentlyDisposePolicy(templateEvent, policyProvider);
           }
         } catch (Exception e) {
           phaseResultNotifier.phaseFailure(e);
@@ -128,6 +138,20 @@ public class ExtensionFlowProcessingPhase
       }
     } else {
       flowExecutionWork.run();
+    }
+  }
+
+  private void silentlyDisposePolicy(Event templateEvent, PolicyProvider policyProvider)
+  {
+    try {
+      if (policyProvider != null) {
+        policyProvider.dispose(templateEvent.getContext().getId());
+      }
+    } catch (Exception e) {
+      logger.warn(e.getMessage());
+      if (logger.isDebugEnabled()) {
+        logger.debug("failure disposing a policy", e);
+      }
     }
   }
 

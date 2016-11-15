@@ -6,12 +6,20 @@
  */
 package org.mule.runtime.core.policy;
 
-import org.mule.runtime.dsl.api.component.ComponentIdentifier;
+import org.mule.runtime.core.api.Event;
 
-public interface Policy {
+import java.io.Serializable;
 
-  OperationPolicyInstance createSourcePolicyInstance(String executionIdentifier, ComponentIdentifier sourceIdentifier);
+/**
+ * A {@code Policy} is responsible to handle the state of a policy applied to a particular execution.
+ *
+ * @since 4.0
+ */
+public interface Policy extends Serializable {
 
-  OperationPolicyInstance createOperationPolicyInstance(String executionIdentifier, ComponentIdentifier operationIdentifier);
+  Event process(Event eventBeforeOperation, NextOperation next) throws Exception;
+
+  //TODO this seems wrong here
+  Event getLastEvent();
 
 }

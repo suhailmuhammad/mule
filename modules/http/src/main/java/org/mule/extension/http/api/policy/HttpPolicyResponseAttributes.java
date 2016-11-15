@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Representation of an HTTP response message attributes.
+ * Representation of an HTTP response message attributes that can be created through
+ * the expression language to modify the response parameters of the http:listener
+ * using policies.
  *
  * @since 4.0
  */
-public class PolicyHttpResponseAttributes implements Attributes {
+public class HttpPolicyResponseAttributes implements Attributes {
 
   /**
    * HTTP status code of the response. Former 'http.status'.

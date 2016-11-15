@@ -30,7 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class PetStoreRetryPolicyConnectionTestCase extends ExtensionFunctionalTestCase {
+public class PetStoreRetryPolicyProviderConnectionTestCase extends ExtensionFunctionalTestCase {
 
   public static final String CONNECTION_FAIL = "Connection fail";
   public static final String CONNECTION_FAIL_DOT = "Connection fail.";
@@ -38,7 +38,7 @@ public class PetStoreRetryPolicyConnectionTestCase extends ExtensionFunctionalTe
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
-  public PetStoreRetryPolicyConnectionTestCase() {}
+  public PetStoreRetryPolicyProviderConnectionTestCase() {}
 
   @Override
   protected String getConfigFile() {

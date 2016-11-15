@@ -8,6 +8,11 @@ package org.mule.extension.http.api;
 
 import org.mule.runtime.core.model.ParameterMap;
 
+/**
+ * Common parts of all http request attributes.
+ *
+ * @since 4.0
+ */
 public class BaseHttpRequestAttributes extends HttpAttributes {
 
   /**

@@ -15,6 +15,11 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
 
+/**
+ * Simple HTTP server implementation for testing purposes.
+ * 
+ * @since 4.0
+ */
 public class SimpleHttpServer {
 
   private final int port;
@@ -29,11 +34,20 @@ public class SimpleHttpServer {
     this.port = port;
   }
 
+  /**
+   * @param port port to listen for http requests.
+   * @return a new {@link SimpleHttpServer} created to listen in the port {@code port}
+   */
   public static SimpleHttpServer createServer(int port) {
     SimpleHttpServer simpleHttpServer = new SimpleHttpServer(port);
     return simpleHttpServer;
   }
 
+  /**
+   * Starts the http server.
+   *
+   * @return {@code this}
+   */
   public SimpleHttpServer start() {
     try {
       server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -46,6 +60,9 @@ public class SimpleHttpServer {
     }
   }
 
+  /**
+   * Stops the http server.
+   */
   public void stop() {
     try {
       server.stop(0);

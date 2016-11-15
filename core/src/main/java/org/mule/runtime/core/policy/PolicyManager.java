@@ -8,7 +8,6 @@ package org.mule.runtime.core.policy;
 
 import org.mule.runtime.core.api.policy.PolicyOperationParametersTransformer;
 import org.mule.runtime.core.api.policy.PolicySourceParametersTransformer;
-import org.mule.runtime.core.api.registry.RegistrationException;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 import java.util.Optional;
@@ -26,13 +25,24 @@ public interface PolicyManager {
   /**
    * Lookups for a {@code Policy} based on the {@code ComponentIdentifier} which may be a source or an operation.
    *
-   * @param componentIdentifier the identifier of the source or operation.
    * @return a policy to be applied to the component. It may be an empty optional if no policy was found.
    */
-  Optional<Policy> lookupPolicy(ComponentIdentifier componentIdentifier);
+  PolicyProvider lookupPolicyProvider();
 
+  /**
+   * A transformer to map operation parameters to content in a {@link org.mule.runtime.api.message.Message} and viceversa.
+   *
+   * @param componentIdentifier the operation identifier.
+   * @return a transformer for operations. May be an empty null if there's no transformer for the provided component identifier
+   */
   Optional<PolicyOperationParametersTransformer> lookupOperationParametersTransformer(ComponentIdentifier componentIdentifier);
 
+  /**
+   * A transformer to map source response function parameters to content in a {@link org.mule.runtime.api.message.Message} and viceversa.
+   *
+   * @param componentIdentifier the operation identifier.
+   * @return a transformer for the source response function. May be an empty null if there's no transformer for the provided component identifier
+   */
   Optional<PolicySourceParametersTransformer> lookupSourceParametersTransformer(ComponentIdentifier componentIdentifier);
 
 }

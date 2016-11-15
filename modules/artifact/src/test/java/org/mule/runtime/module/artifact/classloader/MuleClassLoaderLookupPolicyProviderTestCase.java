@@ -24,7 +24,7 @@ import java.util.Collections;
 import org.junit.Test;
 
 @SmallTest
-public class MuleClassLoaderLookupPolicyTestCase extends AbstractMuleTestCase {
+public class MuleClassLoaderLookupPolicyProviderTestCase extends AbstractMuleTestCase {
 
   @Test(expected = IllegalArgumentException.class)
   public void extendingCustomLookupStrategyForSystemPackage() throws Exception {

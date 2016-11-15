@@ -39,7 +39,6 @@ public class MuleMessageProcessingManager implements MessageProcessingManager, M
 
   @Override
   public void initialise() throws InitialisationException {
-    PolicyManager policyManager = muleContext.getPolicyManager();
     Collection<MessageProcessPhase> registryMessageProcessPhases =
         muleContext.getRegistry().lookupObjects(MessageProcessPhase.class);
     List<MessageProcessPhase> messageProcessPhaseList = new ArrayList<MessageProcessPhase>();
@@ -49,7 +48,7 @@ public class MuleMessageProcessingManager implements MessageProcessingManager, M
     messageProcessPhaseList.add(new ValidationPhase());
     messageProcessPhaseList.add(new FlowProcessingPhase());
     messageProcessPhaseList.add(new AsyncResponseFlowProcessingPhase());
-    messageProcessPhaseList.add(new ExtensionFlowProcessingPhase(policyManager));
+    messageProcessPhaseList.add(new ExtensionFlowProcessingPhase(muleContext.getPolicyManager()));
     Collections.sort(messageProcessPhaseList, new Comparator<MessageProcessPhase>() {
 
       @Override
