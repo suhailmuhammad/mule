@@ -36,8 +36,7 @@ public class NullSourceCompletionHandler implements SourceCompletionHandler {
   }
 
   @Override
-    public Map<String, Object> createFailureResponseParameters(Event event)
-    {
-        return emptyMap();
-    }
+  public Map<String, Object> createFailureResponseParameters(Event event) {
+    return emptyMap();
+  }
 }

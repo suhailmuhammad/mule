@@ -19,7 +19,7 @@ public abstract class HttpAttributes extends BaseAttributes {
   /**
    * Map of HTTP headers in the message. Former properties.
    */
-  protected final ParameterMap headers;
+  protected ParameterMap headers;
 
   public HttpAttributes(ParameterMap headers) {
     this.headers = headers.toImmutableParameterMap();

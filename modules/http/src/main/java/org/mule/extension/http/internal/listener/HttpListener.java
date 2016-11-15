@@ -146,7 +146,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
   private List<ErrorType> knownErrors;
 
   @OnSuccess
-  public void onSuccess(@ Optional @DisplayName(RESPONSE_SETTINGS) @Placement(
+  public void onSuccess(@Optional @DisplayName(RESPONSE_SETTINGS) @Placement(
       group = RESPONSE_SETTINGS) @NullSafe HttpListenerSuccessResponseBuilder responseBuilder,
                         SourceCallbackContext callbackContext)
       throws Exception {

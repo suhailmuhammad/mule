@@ -127,7 +127,8 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
       Optional<ConfigurationInstance> configuration = getConfiguration(event);
 
       ComponentIdentifier operationIdentifier =
-          new ComponentIdentifier.Builder().withName(operationModel.getName()).withNamespace(extensionModel.getName().toLowerCase()).build();
+          new ComponentIdentifier.Builder().withName(operationModel.getName())
+              .withNamespace(extensionModel.getName().toLowerCase()).build();
       Map<String, Object> originalParameterMap = this.resolverSet.resolve(event).asMap();
       Optional<Policy> policy = policyManager.lookupPolicy(operationIdentifier);
       if (policy.isPresent()) {

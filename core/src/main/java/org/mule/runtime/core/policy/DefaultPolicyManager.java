@@ -25,8 +25,7 @@ import java.util.Optional;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 
-public class DefaultPolicyManager implements PolicyManager, Initialisable
-{
+public class DefaultPolicyManager implements PolicyManager, Initialisable {
 
   @Inject
   private MuleContext muleContext;
@@ -51,16 +50,17 @@ public class DefaultPolicyManager implements PolicyManager, Initialisable
   @Override
   public Optional<PolicySourceParametersTransformer> lookupSourceParametersTransformer(ComponentIdentifier componentIdentifier) {
     return policySourceParametersTransformerCollection.stream()
-            .filter(policyOperationParametersTransformer -> policyOperationParametersTransformer.supports(componentIdentifier))
-            .findAny();
+        .filter(policyOperationParametersTransformer -> policyOperationParametersTransformer.supports(componentIdentifier))
+        .findAny();
   }
 
 
   @Override
-  public void initialise() throws InitialisationException
-  {
+  public void initialise() throws InitialisationException {
     policies = muleContext.getRegistry().lookupObjects(Policy.class);
-    policySourceParametersTransformerCollection = muleContext.getRegistry().lookupObjects(PolicySourceParametersTransformer.class);
-    policyOperationParametersTransformerCollection = muleContext.getRegistry().lookupObjects(PolicyOperationParametersTransformer.class);
+    policySourceParametersTransformerCollection =
+        muleContext.getRegistry().lookupObjects(PolicySourceParametersTransformer.class);
+    policyOperationParametersTransformerCollection =
+        muleContext.getRegistry().lookupObjects(PolicyOperationParametersTransformer.class);
   }
 }

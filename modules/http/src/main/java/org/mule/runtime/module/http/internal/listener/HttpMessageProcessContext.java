@@ -15,7 +15,8 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 public class HttpMessageProcessContext implements MessageProcessContext {
 
-  private static final ComponentIdentifier COMPONENT_IDENTIFIER = new ComponentIdentifier.Builder().withNamespace("http").withName("listener").build();
+  private static final ComponentIdentifier COMPONENT_IDENTIFIER =
+      new ComponentIdentifier.Builder().withNamespace("http").withName("listener").build();
 
   private final DefaultHttpListener listener;
   private final FlowConstruct flowConstruct;
@@ -61,8 +62,7 @@ public class HttpMessageProcessContext implements MessageProcessContext {
   }
 
   @Override
-  public ComponentIdentifier getSourceIdentifier()
-  {
+  public ComponentIdentifier getSourceIdentifier() {
     return COMPONENT_IDENTIFIER;
   }
 }

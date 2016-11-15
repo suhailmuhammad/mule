@@ -240,9 +240,9 @@ public class ExtensionMessageSource extends ExtensionComponent implements Messag
       }
 
       @Override
-      public ComponentIdentifier getSourceIdentifier()
-      {
-        return new ComponentIdentifier.Builder().withNamespace(getExtensionModel().getName().toLowerCase()).withName(sourceModel.getName()).build();
+      public ComponentIdentifier getSourceIdentifier() {
+        return new ComponentIdentifier.Builder().withNamespace(getExtensionModel().getName().toLowerCase())
+            .withName(sourceModel.getName()).build();
       }
     };
   }

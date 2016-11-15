@@ -67,7 +67,8 @@ public class OperationMessageProcessorObjectFactory extends AbstractExtensionObj
   private OperationMessageProcessor createMessageProcessor(ResolverSet resolverSet) {
     if (operationModel.getModelProperty(InterceptingModelProperty.class).isPresent()) {
       return new InterceptingOperationMessageProcessor(extensionModel, operationModel, configurationProvider, target,
-                                                       resolverSet, (ExtensionManagerAdapter) muleContext.getExtensionManager(), policyManager);
+                                                       resolverSet, (ExtensionManagerAdapter) muleContext.getExtensionManager(),
+                                                       policyManager);
     } else if (operationModel.getModelProperty(PagedOperationModelProperty.class).isPresent()) {
       return new PagedOperationMessageProcessor(extensionModel, operationModel, configurationProvider, target, resolverSet,
                                                 (ExtensionManagerAdapter) muleContext.getExtensionManager(), policyManager);

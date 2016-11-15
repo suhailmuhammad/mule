@@ -15,7 +15,7 @@ import java.security.cert.Certificate;
  *
  * @since 4.0
  */
-public class HttpRequestAttributes extends HttpAttributes {
+public class HttpRequestAttributes extends BaseHttpRequestAttributes {
 
   /**
    * Full path where the request was received. Former 'http.listener.path'.
@@ -38,10 +38,6 @@ public class HttpRequestAttributes extends HttpAttributes {
    */
   private final String method;
   /**
-   * Full path requested. Former 'http.request.path'.
-   */
-  private final String requestPath;
-  /**
    * Full URI of the request. Former 'http.request.uri'.
    */
   private final String requestUri;
@@ -49,14 +45,6 @@ public class HttpRequestAttributes extends HttpAttributes {
    * Query string of the request. Former 'http.query.string'.
    */
   private final String queryString;
-  /**
-   * Query parameters map built from the parsed string. Former 'http.query.params'.
-   */
-  private final ParameterMap queryParams;
-  /**
-   * URI parameters extracted from the request path. Former 'http.uri.params'.
-   */
-  private final ParameterMap uriParams;
   /**
    * Remote host address from the sender. Former 'http.remote.address'.
    */
@@ -69,17 +57,14 @@ public class HttpRequestAttributes extends HttpAttributes {
   public HttpRequestAttributes(ParameterMap headers, String listenerPath, String relativePath, String version, String scheme,
                                String method, String requestPath, String requestUri, String queryString, ParameterMap queryParams,
                                ParameterMap uriParams, String remoteAddress, Certificate clientCertificate) {
-    super(headers);
+    super(headers, queryParams, uriParams, requestPath);
     this.listenerPath = listenerPath;
     this.relativePath = relativePath;
     this.version = version;
     this.scheme = scheme;
     this.method = method;
-    this.requestPath = requestPath;
     this.requestUri = requestUri;
     this.queryString = queryString;
-    this.queryParams = queryParams.toImmutableParameterMap();
-    this.uriParams = uriParams.toImmutableParameterMap();
     this.remoteAddress = remoteAddress;
     this.clientCertificate = clientCertificate;
   }
@@ -104,24 +89,12 @@ public class HttpRequestAttributes extends HttpAttributes {
     return method;
   }
 
-  public String getRequestPath() {
-    return requestPath;
-  }
-
   public String getRequestUri() {
     return requestUri;
   }
 
   public String getQueryString() {
     return queryString;
-  }
-
-  public ParameterMap getQueryParams() {
-    return queryParams;
-  }
-
-  public ParameterMap getUriParams() {
-    return uriParams;
   }
 
   public String getRemoteAddress() {

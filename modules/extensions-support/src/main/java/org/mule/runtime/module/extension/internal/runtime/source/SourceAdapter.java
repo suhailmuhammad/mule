@@ -138,8 +138,7 @@ public final class SourceAdapter implements Startable, Stoppable, FlowConstructA
     }
 
     @Override
-    public void onCompletion(Event event, Map<String, Object> parameters, ExceptionCallback<Throwable> exceptionCallback)
-    {
+    public void onCompletion(Event event, Map<String, Object> parameters, ExceptionCallback<Throwable> exceptionCallback) {
       safely(() -> onSuccessExecutor.execute(event, parameters, context), exceptionCallback);
     }
 

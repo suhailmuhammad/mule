@@ -64,13 +64,11 @@ public class HttpRequesterRequestBuilder extends HttpMessageBuilder {
     return unmodifiableMap(uriParams);
   }
 
-  public void setQueryParams(Map<String, String> queryParams)
-  {
+  public void setQueryParams(Map<String, String> queryParams) {
     this.queryParams = queryParams;
   }
 
-  public void setUriParams(Map<String, String> uriParams)
-  {
+  public void setUriParams(Map<String, String> uriParams) {
     this.uriParams = uriParams;
   }
 }

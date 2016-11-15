@@ -9,21 +9,17 @@ package org.mule.runtime.core.policy.exception;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.i18n.I18nMessage;
 
-public class PolicyExecutionException extends MuleRuntimeException
-{
+public class PolicyExecutionException extends MuleRuntimeException {
 
-    public PolicyExecutionException(I18nMessage message)
-    {
-        super(message);
-    }
+  public PolicyExecutionException(I18nMessage message) {
+    super(message);
+  }
 
-    public PolicyExecutionException(I18nMessage message, Throwable cause)
-    {
-        super(message, cause);
-    }
+  public PolicyExecutionException(I18nMessage message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public PolicyExecutionException(Throwable cause)
-    {
-        super(cause);
-    }
+  public PolicyExecutionException(Throwable cause) {
+    super(cause);
+  }
 }

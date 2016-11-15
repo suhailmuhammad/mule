@@ -16,7 +16,6 @@ import java.util.Map;
  *
  * @since 4.0
  */
-// TODO Remove once MULE-10947 gets done.
 public class PolicyHttpResponseAttributes implements Attributes {
 
   /**

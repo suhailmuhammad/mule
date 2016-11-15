@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This phase routes the message through the flow.
  * <p>
- * To participate of this phase, {@link MessageProcessTemplate} must implement
- * {@link FlowProcessingPhaseTemplate}
+ * To participate of this phase, {@link MessageProcessTemplate} must implement {@link FlowProcessingPhaseTemplate}
  */
 public class ExtensionFlowProcessingPhase
     extends NotificationFiringProcessingPhase<ExtensionFlowProcessingPhaseTemplate> {
@@ -74,8 +73,9 @@ public class ExtensionFlowProcessingPhase
           ComponentIdentifier sourceIdentifier = messageProcessContext.getSourceIdentifier();
           try {
             final MessagingExceptionHandler exceptionHandler = messageProcessContext.getFlowConstruct().getExceptionListener();
-            final Event templateEvent = Event.builder(create(messageProcessContext.getFlowConstruct(), sourceIdentifier.getNamespace()))
-                .message((InternalMessage) template.getMessage()).build();
+            final Event templateEvent =
+                Event.builder(create(messageProcessContext.getFlowConstruct(), sourceIdentifier.getNamespace()))
+                    .message((InternalMessage) template.getMessage()).build();
 
             NextOperation nextOperation = (muleEvent) -> {
               TransactionalErrorHandlingExecutionTemplate transactionTemplate =
@@ -97,19 +97,23 @@ public class ExtensionFlowProcessingPhase
             if (policy.isPresent()) {
               OperationPolicyInstance policyInstance =
                   policy.get().createSourcePolicyInstance(templateEvent.getContext().getId(), sourceIdentifier);
-              nextOperation = buildFlowExecutionWithPolicyFunction(nextOperation, templateEvent, template, sourceIdentifier, () -> policyInstance.getLastEvent());
+              nextOperation = buildFlowExecutionWithPolicyFunction(nextOperation, templateEvent, template, sourceIdentifier,
+                                                                   () -> policyInstance.getLastEvent());
               flowExecutionResponse = policyInstance.process(templateEvent, nextOperation);
             } else {
               flowExecutionResponse = nextOperation.execute(templateEvent);
             }
             fireNotification(messageSource, flowExecutionResponse, messageProcessContext.getFlowConstruct(), MESSAGE_RESPONSE);
             Map<String, Object> parameters = policyManager.lookupSourceParametersTransformer(sourceIdentifier).get()
-                    .fromMessageToSuccessResponseParameters(flowExecutionResponse.getMessage());
-            template.sendResponseToClient(flowExecutionResponse, parameters, createResponseCompletationCallback(phaseResultNotifier, exceptionHandler));
+                .fromMessageToSuccessResponseParameters(flowExecutionResponse.getMessage());
+            template.sendResponseToClient(flowExecutionResponse, parameters,
+                                          createResponseCompletationCallback(phaseResultNotifier, exceptionHandler));
           } catch (final MessagingException e) {
-            Map<String, Object> parameters = policyManager.lookupSourceParametersTransformer(sourceIdentifier).get().fromMessageToErrorResponseParameters(e.getEvent().getMessage());
+            Map<String, Object> parameters = policyManager.lookupSourceParametersTransformer(sourceIdentifier).get()
+                .fromMessageToErrorResponseParameters(e.getEvent().getMessage());
             fireNotification(messageSource, e.getEvent(), messageProcessContext.getFlowConstruct(), MESSAGE_ERROR_RESPONSE);
-            template.sendFailureResponseToClient(e, parameters, createSendFailureResponseCompletationCallback(phaseResultNotifier));
+            template.sendFailureResponseToClient(e, parameters,
+                                                 createSendFailureResponseCompletationCallback(phaseResultNotifier));
           }
         } catch (Exception e) {
           phaseResultNotifier.phaseFailure(e);
@@ -130,27 +134,31 @@ public class ExtensionFlowProcessingPhase
 
   private NextOperation buildFlowExecutionWithPolicyFunction(NextOperation nextOperation, Event sourceEvent,
                                                              ExtensionFlowProcessingPhaseTemplate template,
-                                                             ComponentIdentifier sourceIdentifier, Supplier<Event> lastEventSupplier) {
+                                                             ComponentIdentifier sourceIdentifier,
+                                                             Supplier<Event> lastEventSupplier) {
     return (processEvent) -> {
       try {
         Event flowExecutionResponse = nextOperation.execute(sourceEvent);
         Optional<PolicySourceParametersTransformer> policySourceParametersTransformer =
-                policyManager.lookupSourceParametersTransformer(sourceIdentifier);
+            policyManager.lookupSourceParametersTransformer(sourceIdentifier);
         if (policySourceParametersTransformer.isPresent()) {
           Map<String, Object> responseParameters =
-                  template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
+              template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
           return Event.builder(processEvent.getContext())
-                  .message((InternalMessage) policySourceParametersTransformer.get().fromParametersToMessage(responseParameters))
-                  .build();
+              .message((InternalMessage) policySourceParametersTransformer.get().fromParametersToMessage(responseParameters))
+              .build();
         } else {
           return Event.builder(flowExecutionResponse).build();
         }
       } catch (MessagingException messagingException) {
-        Map<String, Object> failureParameters = template.getFailedExecutionResponseParametersFunction().apply(messagingException.getEvent());
-        Optional<PolicySourceParametersTransformer> policySourceParametersTransformer = policyManager.lookupSourceParametersTransformer(sourceIdentifier);
+        Map<String, Object> failureParameters =
+            template.getFailedExecutionResponseParametersFunction().apply(messagingException.getEvent());
+        Optional<PolicySourceParametersTransformer> policySourceParametersTransformer =
+            policyManager.lookupSourceParametersTransformer(sourceIdentifier);
         if (policySourceParametersTransformer.isPresent()) {
           Message message = policySourceParametersTransformer.get().fromParametersToMessage(failureParameters);
-          Event.Builder eventBuilder = Event.builder(messagingException.getEvent().getContext()).message((InternalMessage) message);
+          Event.Builder eventBuilder =
+              Event.builder(messagingException.getEvent().getContext()).message((InternalMessage) message);
           lastEventSupplier.get().getVariableNames().forEach(variableName -> {
             eventBuilder.addVariable(variableName, lastEventSupplier.get().getVariable(variableName));
           });

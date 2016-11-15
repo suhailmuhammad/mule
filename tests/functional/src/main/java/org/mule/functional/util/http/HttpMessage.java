@@ -22,10 +22,11 @@ public class HttpMessage {
 
   public HttpMessage(HttpExchange httpExchange) {
     this.body = IOUtils.toByteArray(httpExchange.getRequestBody());
-      ImmutableMultimap.Builder<String, String> headersBuilder = ImmutableMultimap.builder();
-      Set<String> headerNames = httpExchange.getRequestHeaders().keySet();
-      headerNames.stream().forEach( headerName -> headersBuilder.putAll(headerName, httpExchange.getRequestHeaders().get(headerName)));
-      this.headers = headersBuilder.build();
+    ImmutableMultimap.Builder<String, String> headersBuilder = ImmutableMultimap.builder();
+    Set<String> headerNames = httpExchange.getRequestHeaders().keySet();
+    headerNames.stream()
+        .forEach(headerName -> headersBuilder.putAll(headerName, httpExchange.getRequestHeaders().get(headerName)));
+    this.headers = headersBuilder.build();
   }
 
   public byte[] getBody() {

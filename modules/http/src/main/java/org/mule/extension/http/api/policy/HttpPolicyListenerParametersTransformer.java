@@ -22,8 +22,7 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-public class HttpPolicyListenerParametersTransformer implements PolicySourceParametersTransformer
-{
+public class HttpPolicyListenerParametersTransformer implements PolicySourceParametersTransformer {
 
   @Override
   public boolean supports(ComponentIdentifier componentIdentifier) {
@@ -37,14 +36,19 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
       responseBuilder = (HttpListenerResponseBuilder) parameters.get("errorResponseBuilder");
     }
     ParameterMap headers = new ParameterMap(responseBuilder.getHeaders());
-    return Message.builder().payload(responseBuilder.getBody())
-        .attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
+    Message.Builder messageBuilder;
+    Message.PayloadBuilder builder = Message.builder();
+    if (responseBuilder.getBody() == null) {
+      messageBuilder = builder.nullPayload();
+    } else {
+      messageBuilder = builder.payload(responseBuilder.getBody());
+    }
+    return messageBuilder.attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
         .build();
   }
 
   @Override
-  public Map<String, Object> fromMessageToSuccessResponseParameters(Message message)
-  {
+  public Map<String, Object> fromMessageToSuccessResponseParameters(Message message) {
     if (message.getAttributes() instanceof HttpResponseAttributes) {
       HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
       HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
@@ -58,7 +62,8 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
       httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
       httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
       //TODO fix putting both
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder).put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
+      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder)
+          .put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
     } else if (message.getAttributes() instanceof PolicyHttpResponseAttributes) {
       PolicyHttpResponseAttributes httpResponseAttributes = (PolicyHttpResponseAttributes) message.getAttributes();
       HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
@@ -71,7 +76,8 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
       // TODO see media type
       httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
       httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder).put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
+      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder)
+          .put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
     } else {
       // TODO fix
       throw new RuntimeException("");
@@ -79,8 +85,7 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
   }
 
   @Override
-  public Map<String, Object> fromMessageToErrorResponseParameters(Message message)
-  {
+  public Map<String, Object> fromMessageToErrorResponseParameters(Message message) {
     if (message.getAttributes() instanceof HttpResponseAttributes) {
       HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
       HttpListenerErrorResponseBuilder httpListenerErrorResponseBuilder = new HttpListenerErrorResponseBuilder();
@@ -95,7 +100,8 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
       httpListenerErrorResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
       httpListenerErrorResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
       //TODO fix putting both
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerErrorResponseBuilder).put("errorResponseBuilder", httpListenerErrorResponseBuilder).build();
+      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerErrorResponseBuilder)
+          .put("errorResponseBuilder", httpListenerErrorResponseBuilder).build();
     } else if (message.getAttributes() instanceof PolicyHttpResponseAttributes) {
       PolicyHttpResponseAttributes httpResponseAttributes = (PolicyHttpResponseAttributes) message.getAttributes();
       HttpListenerErrorResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerErrorResponseBuilder();
@@ -108,7 +114,8 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
       // TODO see media type
       httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
       httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder).put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
+      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder)
+          .put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
     } else {
       // TODO fix
       throw new RuntimeException("");

@@ -6,7 +6,33 @@
  */
 package org.mule.extension.http.api.policy;
 
-public class HttpPolicyRequestAttributes
+import org.mule.extension.http.api.BaseHttpRequestAttributes;
+import org.mule.runtime.core.model.ParameterMap;
+
+import java.util.Map;
+
+public class HttpPolicyRequestAttributes extends BaseHttpRequestAttributes
 {
+
+    public HttpPolicyRequestAttributes(ParameterMap headers, ParameterMap queryParams, ParameterMap uriParams, String requestPath)
+    {
+        super(headers, queryParams, uriParams, requestPath);
+    }
+
+    public HttpPolicyRequestAttributes() {
+        super(new ParameterMap(), new ParameterMap(), new ParameterMap(), "");
+    }
+
+    public void setHeaders(Map<String,String> headers) {
+        this.headers = new ParameterMap(headers);
+    }
+
+    public void setQueryParams(Map<String, String> queryParams) {
+        this.queryParams = new ParameterMap(queryParams);
+    }
+
+    public void setUriParams(Map<String, String> uriParams) {
+        this.uriParams = new ParameterMap(uriParams);
+    }
 
 }
