@@ -30,24 +30,33 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
   }
 
   @Override
-  public Message fromParametersToMessage(Map<String, Object> parameters) {
+  public Message fromSuccessResponseParametersToMessage(Map<String, Object> parameters) {
     HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("responseBuilder");
-    if (responseBuilder == null) {
-      responseBuilder = (HttpListenerResponseBuilder) parameters.get("errorResponseBuilder");
-    }
-    ParameterMap headers = new ParameterMap(responseBuilder.getHeaders());
-    Message.Builder messageBuilder;
-    Message.PayloadBuilder builder = Message.builder();
-    if (responseBuilder.getBody() == null) {
-      messageBuilder = builder.nullPayload();
-    } else {
-      messageBuilder = builder.payload(responseBuilder.getBody());
-    }
-    return messageBuilder.attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
-        .build();
+    return responseParametersToMessage(responseBuilder);
   }
 
-  @Override
+    private Message responseParametersToMessage(HttpListenerResponseBuilder responseBuilder)
+    {
+        ParameterMap headers = new ParameterMap(responseBuilder.getHeaders());
+        Message.Builder messageBuilder;
+        Message.PayloadBuilder builder = Message.builder();
+        if (responseBuilder.getBody() == null) {
+          messageBuilder = builder.nullPayload();
+        } else {
+          messageBuilder = builder.payload(responseBuilder.getBody());
+        }
+        return messageBuilder.attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
+            .build();
+    }
+
+    @Override
+    public Message fromFailureResponseParametersToMessage(Map<String, Object> parameters)
+    {
+        HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("errorResponseBuilder");
+        return responseParametersToMessage(responseBuilder);
+    }
+
+    @Override
   public Map<String, Object> fromMessageToSuccessResponseParameters(Message message) {
     if (message.getAttributes() instanceof HttpResponseAttributes) {
       HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();

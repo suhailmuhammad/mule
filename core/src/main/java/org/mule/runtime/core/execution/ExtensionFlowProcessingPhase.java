@@ -16,7 +16,6 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.message.InternalMessage;
-import org.mule.runtime.core.api.policy.PolicyOperationParametersTransformer;
 import org.mule.runtime.core.api.policy.PolicySourceParametersTransformer;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.exception.MessagingException;
@@ -145,7 +144,7 @@ public class ExtensionFlowProcessingPhase
           Map<String, Object> responseParameters =
               template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
           return Event.builder(processEvent.getContext())
-              .message((InternalMessage) policySourceParametersTransformer.get().fromParametersToMessage(responseParameters))
+              .message((InternalMessage) policySourceParametersTransformer.get().fromSuccessResponseParametersToMessage(responseParameters))
               .build();
         } else {
           return Event.builder(flowExecutionResponse).build();
@@ -156,7 +155,7 @@ public class ExtensionFlowProcessingPhase
         Optional<PolicySourceParametersTransformer> policySourceParametersTransformer =
             policyManager.lookupSourceParametersTransformer(sourceIdentifier);
         if (policySourceParametersTransformer.isPresent()) {
-          Message message = policySourceParametersTransformer.get().fromParametersToMessage(failureParameters);
+          Message message = policySourceParametersTransformer.get().fromFailureResponseParametersToMessage(failureParameters);
           Event.Builder eventBuilder =
               Event.builder(messagingException.getEvent().getContext()).message((InternalMessage) message);
           lastEventSupplier.get().getVariableNames().forEach(variableName -> {

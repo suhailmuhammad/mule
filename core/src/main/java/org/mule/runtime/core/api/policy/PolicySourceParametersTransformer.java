@@ -35,7 +35,18 @@ public interface PolicySourceParametersTransformer {
    * @param parameters resolved set of parameters to be processed by the operation.
    * @return a new {@link Message} with all the useful content of the parameters.
    */
-  Message fromParametersToMessage(Map<String, Object> parameters);
+  Message fromSuccessResponseParametersToMessage(Map<String, Object> parameters);
+
+  /**
+   * Transformers a set of parameters from the failure response function to a message that can be route through the policy pipeline.
+   *
+   * Such transformation must be done taking into account that all the useful information from the parameters
+   * must be accessible through the created {@link Message}.
+   *
+   * @param parameters resolved set of parameters to be processed by the operation.
+   * @return a new {@link Message} with all the useful content of the parameters.
+   */
+  Message fromFailureResponseParametersToMessage(Map<String, Object> parameters);
 
   /**
    * Transformers the output of the source policy pipeline to the set of parameters
