@@ -14,20 +14,20 @@ import java.util.Map;
 /**
  * Implementations of this interface must provide a transformation between the parameters of source response function
  * and a {@link Message}. Such transformation is used to be able to execute the policy pipeline and handle the
- * information to be sent by the operation or event modify it.
+ * information to be sent by the operation or modify it.
  * 
  * @since 4.0
  */
 public interface PolicySourceParametersTransformer {
 
   /**
-   * @param componentIdentifier the source / operation identifier.
+   * @param componentIdentifier the operation identifier.
    * @return true if this implementation supports the specified component, false otherwise.
    */
   boolean supports(ComponentIdentifier componentIdentifier);
 
   /**
-   * Transformers a set of parameters to a message that can be route through the policy pipeline.
+   * Transforms a set of parameters to a message that can be route through the policy pipeline.
    *
    * Such transformation must be done taking into account that all the useful information from the parameters
    * must be accessible through the created {@link Message}.
@@ -38,7 +38,7 @@ public interface PolicySourceParametersTransformer {
   Message fromSuccessResponseParametersToMessage(Map<String, Object> parameters);
 
   /**
-   * Transformers a set of parameters from the failure response function to a message that can be route through the policy pipeline.
+   * Transforms a set of parameters from the failure response function to a message that can be route through the policy pipeline.
    *
    * Such transformation must be done taking into account that all the useful information from the parameters
    * must be accessible through the created {@link Message}.
@@ -49,7 +49,7 @@ public interface PolicySourceParametersTransformer {
   Message fromFailureResponseParametersToMessage(Map<String, Object> parameters);
 
   /**
-   * Transformers the output of the source policy pipeline to the set of parameters
+   * Transforms the output of the source policy pipeline to the set of parameters
    * to be sent by the successful response function of the message source.
    *
    * @param message the output message from the policy source pipeline.
@@ -58,7 +58,7 @@ public interface PolicySourceParametersTransformer {
   Map<String, Object> fromMessageToSuccessResponseParameters(Message message);
 
   /**
-   * Transformers the output of the source policy pipeline when it's execution failed
+   * Transforms the output of the source policy pipeline when it's execution failed
    * to the set of parameters to be sent by the failure response function of the message source.
    *
    * @param message the output message from the policy source pipeline.

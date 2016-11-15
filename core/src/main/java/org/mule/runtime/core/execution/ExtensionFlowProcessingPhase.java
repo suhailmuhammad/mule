@@ -144,7 +144,8 @@ public class ExtensionFlowProcessingPhase
           Map<String, Object> responseParameters =
               template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
           return Event.builder(processEvent.getContext())
-              .message((InternalMessage) policySourceParametersTransformer.get().fromSuccessResponseParametersToMessage(responseParameters))
+              .message((InternalMessage) policySourceParametersTransformer.get()
+                  .fromSuccessResponseParametersToMessage(responseParameters))
               .build();
         } else {
           return Event.builder(flowExecutionResponse).build();

@@ -31,7 +31,6 @@ public interface PolicyManager {
    */
   Optional<Policy> lookupPolicy(ComponentIdentifier componentIdentifier);
 
-
   Optional<PolicyOperationParametersTransformer> lookupOperationParametersTransformer(ComponentIdentifier componentIdentifier);
 
   Optional<PolicySourceParametersTransformer> lookupSourceParametersTransformer(ComponentIdentifier componentIdentifier);
