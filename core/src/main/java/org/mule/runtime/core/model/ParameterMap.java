@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,7 +31,18 @@ public class ParameterMap implements Map<String, String>, Serializable {
   protected Map<String, LinkedList<String>> paramsMap;
 
   public ParameterMap(final Map paramsMap) {
-    this.paramsMap = unmodifiableMap(paramsMap);
+    this.paramsMap = new HashMap<>();
+    paramsMap.keySet().stream().forEach(key -> {
+      Object value = paramsMap.get(key);
+      if (value instanceof Collection) {
+        Collection values = (Collection) value;
+        values.stream().forEach(collectionValue -> {
+          this.put(key.toString(), collectionValue.toString());
+        });
+      } else {
+        this.put(key.toString(), value.toString());
+      }
+    });
   }
 
   public ParameterMap() {

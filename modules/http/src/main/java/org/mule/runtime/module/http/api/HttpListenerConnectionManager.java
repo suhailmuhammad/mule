@@ -7,6 +7,7 @@
 package org.mule.runtime.module.http.api;
 
 
+import static org.mule.runtime.core.util.SystemUtils.getDefaultEncoding;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.context.MuleContextAware;
@@ -15,6 +16,8 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.config.i18n.CoreMessages;
+import org.mule.runtime.core.execution.MessageProcessingManager;
+import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.module.http.internal.listener.HttpListenerRegistry;
 import org.mule.runtime.module.http.internal.listener.HttpServerManager;
 import org.mule.runtime.module.http.internal.listener.Server;
@@ -29,6 +32,8 @@ import com.google.common.collect.Iterables;
 
 import java.io.IOException;
 import java.util.Collection;
+
+import javax.inject.Inject;
 
 public class HttpListenerConnectionManager implements Initialisable, Disposable, MuleContextAware {
 
