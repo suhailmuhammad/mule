@@ -15,6 +15,7 @@ import static org.mule.runtime.core.api.config.MuleProperties.MULE_LOG_VERBOSE_C
 import static org.mule.runtime.deployment.model.internal.AbstractArtifactClassLoaderBuilder.getArtifactPluginId;
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
 import org.mule.runtime.container.internal.ContainerClassLoaderFilterFactory;
+import org.mule.runtime.container.internal.FilteringContainerClassLoader;
 import org.mule.runtime.container.internal.MuleModule;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
@@ -223,7 +224,7 @@ public class IsolatedClassLoaderFactory {
 
     logClassLoaderUrls("CONTAINER", artifactsUrlClassification.getContainerUrls());
     return testContainerClassLoaderFactory
-        .createContainerClassLoader(new FilteringArtifactClassLoader(launcherArtifact, filteredClassLoaderLauncher));
+        .createContainerClassLoader(new FilteringContainerClassLoader(launcherArtifact, filteredClassLoaderLauncher));
   }
 
   /**
