@@ -6,6 +6,7 @@
  */
 package org.mule.extension.http.api.policy;
 
+import static java.util.Collections.emptyMap;
 import static org.mule.runtime.dsl.api.component.ComponentIdentifier.parseComponentIdentifier;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.extension.http.api.listener.builder.HttpListenerErrorResponseBuilder;
@@ -20,6 +21,7 @@ import org.mule.runtime.module.http.internal.domain.response.HttpResponse;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class HttpPolicyListenerParametersTransformer implements PolicySourceParametersTransformer {
@@ -35,99 +37,54 @@ public class HttpPolicyListenerParametersTransformer implements PolicySourcePara
     return responseParametersToMessage(responseBuilder);
   }
 
-    private Message responseParametersToMessage(HttpListenerResponseBuilder responseBuilder)
-    {
-        ParameterMap headers = new ParameterMap(responseBuilder.getHeaders());
-        Message.Builder messageBuilder;
-        Message.PayloadBuilder builder = Message.builder();
-        if (responseBuilder.getBody() == null) {
-          messageBuilder = builder.nullPayload();
-        } else {
-          messageBuilder = builder.payload(responseBuilder.getBody());
-        }
-        return messageBuilder.attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
-            .build();
-    }
-
-    @Override
-    public Message fromFailureResponseParametersToMessage(Map<String, Object> parameters)
-    {
-        HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("errorResponseBuilder");
-        return responseParametersToMessage(responseBuilder);
-    }
-
-    @Override
-  public Map<String, Object> fromMessageToSuccessResponseParameters(Message message) {
-    if (message.getAttributes() instanceof HttpResponseAttributes) {
-      HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
-      HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
-      httpListenerSuccessResponseBuilder.setBody(message.getPayload().getValue());
-      // TODO change this code to work with collection
-      for (String headerName : httpResponseAttributes.getHeaders().keySet()) {
-        httpListenerSuccessResponseBuilder.getHeaders().put(headerName, httpResponseAttributes.getHeaders().get(headerName));
-      }
-
-      // TODO see media type
-      httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
-      httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-      //TODO fix putting both
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder)
-          .put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
-    } else if (message.getAttributes() instanceof PolicyHttpResponseAttributes) {
-      PolicyHttpResponseAttributes httpResponseAttributes = (PolicyHttpResponseAttributes) message.getAttributes();
-      HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
-      httpListenerSuccessResponseBuilder.setBody(message.getPayload().getValue());
-      // TODO change this code to work with collection
-      for (String headerName : httpResponseAttributes.getHeaders().keySet()) {
-        httpListenerSuccessResponseBuilder.getHeaders().put(headerName, httpResponseAttributes.getHeaders().get(headerName));
-      }
-
-      // TODO see media type
-      httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
-      httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder)
-          .put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
+  private Message responseParametersToMessage(HttpListenerResponseBuilder responseBuilder) {
+    ParameterMap headers = new ParameterMap(responseBuilder.getHeaders());
+    Message.Builder messageBuilder;
+    Message.PayloadBuilder builder = Message.builder();
+    if (responseBuilder.getBody() == null) {
+      messageBuilder = builder.nullPayload();
     } else {
-      // TODO fix
-      throw new RuntimeException("");
+      messageBuilder = builder.payload(responseBuilder.getBody());
     }
+    return messageBuilder
+        .attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
+        .build();
+  }
+
+  @Override
+  public Message fromFailureResponseParametersToMessage(Map<String, Object> parameters) {
+    HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("errorResponseBuilder");
+    return responseParametersToMessage(responseBuilder);
+  }
+
+  @Override
+  public Map<String, Object> fromMessageToSuccessResponseParameters(Message message) {
+    return messageToResponseParameters(new HttpListenerSuccessResponseBuilder(), "responseBuilder", message);
   }
 
   @Override
   public Map<String, Object> fromMessageToErrorResponseParameters(Message message) {
+    return messageToResponseParameters(new HttpListenerErrorResponseBuilder(), "errorResponseBuilder", message);
+  }
+
+  private Map<String, Object> messageToResponseParameters(HttpListenerResponseBuilder httpListenerResponseBuilder,
+                                                          String responseBuilderParameterName, Message message) {
     if (message.getAttributes() instanceof HttpResponseAttributes) {
       HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
-      HttpListenerErrorResponseBuilder httpListenerErrorResponseBuilder = new HttpListenerErrorResponseBuilder();
-      httpListenerErrorResponseBuilder.setBody(message.getPayload().getValue());
-
-      // TODO change this code to work with collection
-      for (String headerName : httpResponseAttributes.getHeaders().keySet()) {
-        httpListenerErrorResponseBuilder.getHeaders().put(headerName, httpResponseAttributes.getHeaders().get(headerName));
-      }
-
-      // TODO see media type
-      httpListenerErrorResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
-      httpListenerErrorResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-      //TODO fix putting both
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerErrorResponseBuilder)
-          .put("errorResponseBuilder", httpListenerErrorResponseBuilder).build();
+      httpListenerResponseBuilder.setBody(message.getPayload().getValue());
+      httpListenerResponseBuilder.setHeaders(httpResponseAttributes.getHeaders());
+      httpListenerResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
+      httpListenerResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
+      return ImmutableMap.<String, Object>builder().put(responseBuilderParameterName, httpListenerResponseBuilder).build();
     } else if (message.getAttributes() instanceof PolicyHttpResponseAttributes) {
       PolicyHttpResponseAttributes httpResponseAttributes = (PolicyHttpResponseAttributes) message.getAttributes();
-      HttpListenerErrorResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerErrorResponseBuilder();
-      httpListenerSuccessResponseBuilder.setBody(message.getPayload().getValue());
-      // TODO change this code to work with collection
-      for (String headerName : httpResponseAttributes.getHeaders().keySet()) {
-        httpListenerSuccessResponseBuilder.getHeaders().put(headerName, httpResponseAttributes.getHeaders().get(headerName));
-      }
-
-      // TODO see media type
-      httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
-      httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-      return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder)
-          .put("errorResponseBuilder", httpListenerSuccessResponseBuilder).build();
+      httpListenerResponseBuilder.setBody(message.getPayload().getValue());
+      httpListenerResponseBuilder.setHeaders(httpResponseAttributes.getHeaders());
+      httpListenerResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
+      httpListenerResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
+      return ImmutableMap.<String, Object>builder().put(responseBuilderParameterName, httpListenerResponseBuilder).build();
     } else {
-      // TODO fix
-      throw new RuntimeException("");
+      return emptyMap();
     }
   }
 
