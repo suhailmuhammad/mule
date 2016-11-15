@@ -23,6 +23,7 @@
         <module>deployment-model</module>
         <module>dsl-api</module>
         <module>extensions-support</module>
+        <module>extensions-xml-support</module>
         <module>file-extension-common</module>
         <module>launcher</module>
         <module>http</module>

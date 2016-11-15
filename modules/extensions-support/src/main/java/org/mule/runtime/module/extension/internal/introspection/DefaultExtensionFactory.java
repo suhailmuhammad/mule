@@ -97,20 +97,31 @@ public final class DefaultExtensionFactory implements ExtensionFactory {
    * @param classLoader the {@link ClassLoader} on which the {@code serviceRegistry} will search into
    */
   public DefaultExtensionFactory(ServiceRegistry serviceRegistry, ClassLoader classLoader) {
-    modelEnrichers = ImmutableList.copyOf(serviceRegistry.lookupProviders(ModelEnricher.class, classLoader));
-    modelValidators = ImmutableList.<ModelValidator>builder()
-        .add(new SubtypesModelValidator())
-        .add(new NameClashModelValidator())
-        .add(new ParameterModelValidator())
-        .add(new ExportedTypesModelValidator())
-        .add(new ConnectionProviderModelValidator())
-        .add(new ConfigurationModelValidator())
-        .add(new OperationReturnTypeModelValidator())
-        .add(new OperationParametersModelValidator())
-        .add(new MetadataComponentModelValidator())
-        .add(new ExclusiveParameterModelValidator())
-        .add(new ConnectionProviderNameModelValidator())
-        .build();
+    this(ImmutableList.copyOf(serviceRegistry.lookupProviders(ModelEnricher.class, classLoader)),
+         ImmutableList.<ModelValidator>builder()
+             .add(new SubtypesModelValidator())
+             .add(new NameClashModelValidator())
+             .add(new ParameterModelValidator())
+             .add(new ExportedTypesModelValidator())
+             .add(new ConnectionProviderModelValidator())
+             .add(new ConfigurationModelValidator())
+             .add(new OperationReturnTypeModelValidator())
+             .add(new OperationParametersModelValidator())
+             .add(new MetadataComponentModelValidator())
+             .add(new ExclusiveParameterModelValidator())
+             .add(new ConnectionProviderNameModelValidator())
+             .build());
+  }
+
+  /**
+   * Creates a new instance by using the parametrized {@link ModelEnricher}s and {@link ModelValidator}s
+   *
+   * @param modelEnrichers collection of {@link ModelEnricher}, not null.
+   * @param modelValidators collection of {@link ModelValidator}, not null.
+   */
+  public DefaultExtensionFactory(List<ModelEnricher> modelEnrichers, List<ModelValidator> modelValidators) {
+    this.modelEnrichers = modelEnrichers;
+    this.modelValidators = modelValidators;
   }
 
   /**

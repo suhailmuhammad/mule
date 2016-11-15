@@ -62,8 +62,8 @@ import static org.mule.runtime.module.deployment.internal.application.Properties
 import static org.mule.runtime.module.deployment.internal.application.TestApplicationFactory.createTestApplicationFactory;
 import static org.mule.runtime.module.service.ServiceDescriptorFactory.SERVICE_PROVIDER_CLASS_NAME;
 import static org.mule.tck.junit4.AbstractMuleContextTestCase.TEST_MESSAGE;
-
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.core.DefaultEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
@@ -85,6 +85,8 @@ import org.mule.runtime.deployment.model.api.domain.DomainDescriptor;
 import org.mule.runtime.deployment.model.internal.application.MuleApplicationClassLoaderFactory;
 import org.mule.runtime.deployment.model.internal.domain.DomainClassLoaderFactory;
 import org.mule.runtime.deployment.model.internal.nativelib.DefaultNativeLibraryFinderFactory;
+import org.mule.runtime.extension.api.describer.MuleArtifactDescriberBuilder;
+import org.mule.runtime.extension.internal.introspection.describer.XmlBasedDescriber;
 import org.mule.runtime.module.artifact.builder.TestArtifactDescriptor;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.deployment.api.DeploymentListener;
@@ -190,6 +192,10 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
                  getResourceFile("/org/foo/hello/HelloExtension.java"),
                  getResourceFile("/org/foo/hello/HelloOperation.java"))
       .compile("mule-module-hello-4.0-SNAPSHOT.jar", "1.0");
+
+  //private static final ArtifactPluginFileBuilder byeXmlExtensionPlugin = new ArtifactPluginFileBuilder("bye-extension")
+  //  .containingResource("module-byeSource.xml", "classes/module-bye.xml");
+  //.containingResource("module-byeSource.xml", "classes/module-bye.xml")
 
   private static final File echoTestClassFile = new SingleClassCompiler()
       .compile(getResourceFile("/org/foo/EchoTest.java"));
@@ -1513,6 +1519,27 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
                             "/, META-INF/mule-hello.xsd, META-INF/spring.handlers, META-INF/spring.schemas");
     ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder("appWithExtensionPlugin")
         .definedBy("app-with-extension-plugin-config.xml").containingPlugin(extensionPlugin);
+    addPackedAppFromBuilder(applicationFileBuilder);
+
+    startDeployment();
+
+    assertDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
+  }
+
+  @Test
+  public void deploysAppZipWithExtensionXmlPlugin() throws Exception {
+    String moduleFileName = "module-bye.xml";
+    String extensionName = "bye-extension";
+    MuleArtifactDescriberBuilder builder =
+        new MuleArtifactDescriberBuilder().setName(extensionName).setMinMuleVersion(new MuleVersion("4.0.0"));
+    builder.withExtensionModelDescriber().setId(XmlBasedDescriber.DESCRIBER_ID).addProperty("resource-xml", moduleFileName);
+
+    final ArtifactPluginFileBuilder byeXmlExtensionPlugin = new ArtifactPluginFileBuilder(extensionName)
+        .containingResource("module-byeSource.xml", moduleFileName)
+        .configuredWith(builder.build());
+
+    ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder("appWithExtensionXmlPlugin")
+        .definedBy("app-with-extension-xml-plugin-config.xml").containingPlugin(byeXmlExtensionPlugin);
     addPackedAppFromBuilder(applicationFileBuilder);
 
     startDeployment();
