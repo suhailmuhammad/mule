@@ -193,10 +193,6 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
                  getResourceFile("/org/foo/hello/HelloOperation.java"))
       .compile("mule-module-hello-4.0-SNAPSHOT.jar", "1.0");
 
-  //private static final ArtifactPluginFileBuilder byeXmlExtensionPlugin = new ArtifactPluginFileBuilder("bye-extension")
-  //  .containingResource("module-byeSource.xml", "classes/module-bye.xml");
-  //.containingResource("module-byeSource.xml", "classes/module-bye.xml")
-
   private static final File echoTestClassFile = new SingleClassCompiler()
       .compile(getResourceFile("/org/foo/EchoTest.java"));
 
