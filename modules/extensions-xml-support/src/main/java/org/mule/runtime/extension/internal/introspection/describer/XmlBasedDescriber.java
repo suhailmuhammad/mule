@@ -148,14 +148,14 @@ public class XmlBasedDescriber implements Describer {
     String name = moduleModel.getParameters().get(MODULE_NAME);
     String namespace = moduleModel.getParameters().get(MODULE_NAMESPACE_ATTRIBUTE);
 
-    String version = "4.0"; // TODO(fernandezlautaro): MULE-10866 add from version to smart extensions
+    String version = "4.0"; // TODO(fernandezlautaro): from version to smart extensions
     declarer.named(name)
-        .describedAs("some description") // TODO(fernandezlautaro): MULE-10866 add description to smart extensions
-        .fromVendor("MuleSoft") // TODO(fernandezlautaro): MULE-10866 add vendor to smart extensions
+        .describedAs("Some description")
+        .fromVendor("MuleSoft") // TODO(fernandezlautaro): add vendor to smart extensions
         .onVersion(version)
-        .withMinMuleVersion(new MuleVersion("4.0.0")) // TODO(fernandezlautaro): MULE-10866 add minMuleVersion to smart extensions
+        .withMinMuleVersion(new MuleVersion("4.0.0"))
         .withCategory(Category.COMMUNITY)
-        .withXmlDsl(XmlDslModel.builder() // TODO(fernandezlautaro): MULE-10866 talk to Alejandro so that the current builder can be refactored
+        .withXmlDsl(XmlDslModel.builder()
             .setSchemaVersion(version)
             .setNamespace(name)
             .setNamespaceUri(namespace)
