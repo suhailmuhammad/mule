@@ -29,9 +29,19 @@ import org.mule.runtime.module.extension.internal.introspection.DefaultExtension
 import org.mule.runtime.module.extension.internal.introspection.describer.AnnotationsBasedDescriber;
 import org.mule.runtime.module.extension.internal.introspection.enricher.XmlModelEnricher;
 import org.mule.runtime.module.extension.internal.introspection.version.StaticVersionResolver;
+import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.GlobalInnerPojoConnector;
+import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.GlobalPojoConnector;
+import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.ListConnector;
+import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.MapConnector;
+import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.StringListConnector;
+import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.TestConnector;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
+import org.mule.test.metadata.extension.MetadataExtension;
+import org.mule.test.petstore.extension.PetStoreConnector;
+import org.mule.test.subtypes.extension.SubTypesMappingConnector;
+import org.mule.test.vegan.extension.VeganExtension;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -74,16 +84,16 @@ public class SchemaGeneratorTestCase extends AbstractMuleTestCase {
 
       {
         put(HeisenbergExtension.class, "heisenberg.xsd");
-        //put(TestConnector.class, "basic.xsd");
-        //put(GlobalPojoConnector.class, "global-pojo.xsd");
-        //put(GlobalInnerPojoConnector.class, "global-inner-pojo.xsd");
-        //put(MapConnector.class, "map.xsd");
-        //put(ListConnector.class, "list.xsd");
-        //put(StringListConnector.class, "string-list.xsd");
-        //put(VeganExtension.class, "vegan.xsd");
-        //put(SubTypesMappingConnector.class, "subtypes.xsd");
-        //put(PetStoreConnector.class, "petstore.xsd");
-        //put(MetadataExtension.class, "metadata.xsd");
+        put(TestConnector.class, "basic.xsd");
+        put(GlobalPojoConnector.class, "global-pojo.xsd");
+        put(GlobalInnerPojoConnector.class, "global-inner-pojo.xsd");
+        put(MapConnector.class, "map.xsd");
+        put(ListConnector.class, "list.xsd");
+        put(StringListConnector.class, "string-list.xsd");
+        put(VeganExtension.class, "vegan.xsd");
+        put(SubTypesMappingConnector.class, "subtypes.xsd");
+        put(PetStoreConnector.class, "petstore.xsd");
+        put(MetadataExtension.class, "metadata.xsd");
       }
     };
 
